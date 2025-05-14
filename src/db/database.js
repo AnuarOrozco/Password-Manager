@@ -1,52 +1,28 @@
 // src/db/database.js
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+import Database from 'better-sqlite3';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Configuración de la base de datos
-const DB_CONFIG = {
-  filename: './database/passwords.db',  // Cambiado a una carpeta específica
-  driver: sqlite3.Database
-};
+// Configuración de rutas ES Modules
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DB_PATH = path.join(__dirname, '../../database/passwords.db');
 
-// Manejador de conexión
-export async function getDbConnection() {
-  try {
-    const db = await open(DB_CONFIG);
-    await initializeDatabase(db);
-    return db;
-  } catch (error) {
-    console.error('Error al conectar a la base de datos:', error);
-    throw new Error('No se pudo conectar a la base de datos');
-  }
-}
+// Crear instancia de la base de datos
+const db = new Database(DB_PATH);
 
-// Inicialización de la base de datos
-async function initializeDatabase(db) {
-  try {
-    await db.exec(`
-      CREATE TABLE IF NOT EXISTS passwords (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        service TEXT NOT NULL,
-        username TEXT NOT NULL,
-        password TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-    
-    // Índice para búsquedas más rápidas
-    await db.exec('CREATE INDEX IF NOT EXISTS idx_service ON passwords(service)');
-  } catch (error) {
-    console.error('Error al inicializar la base de datos:', error);
-    throw error;
-  }
-}
+// Inicialización
+db.pragma('journal_mode = WAL'); // Mejor rendimiento
 
-// Función para cerrar la conexión (opcional pero recomendado)
-export async function closeDbConnection(db) {
-  try {
-    await db.close();
-  } catch (error) {
-    console.error('Error al cerrar la conexión:', error);
-  }
-}
+// Crear tablas si no existen
+db.exec(`
+  CREATE TABLE IF NOT EXISTS passwords (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    service TEXT NOT NULL,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE INDEX IF NOT EXISTS idx_service ON passwords(service);
+`);
+
+export default db;

@@ -7,18 +7,6 @@
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
-    color-scheme: light dark;
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-
-    /* Light mode defaults (sobreescritos en dark mode) */
-    --text-color: #213547;
-    --bg-color: #ffffff;
-    --link-color: #646cff;
-    --link-hover: #747bff;
-    --button-bg: #f9f9f9;
   }
 
   /* Dark mode overrides */
@@ -51,13 +39,7 @@
   }
 
   button {
-    @apply rounded-lg border border-transparent bg-[var(--button-bg)] px-[1.2em] py-[0.6em] text-base font-medium font-inherit transition-[border-color] duration-250;
-    &:hover {
-      @apply border-[#646cff];
-    }
-    &:focus,
-    &:focus-visible {
-      @apply outline-[4px] outline-auto outline-[webkit-focus-ring-color];
-    }
+    font-family: inherit; /* Changed from font-inherit */
+    @apply font-medium;
   }
 }

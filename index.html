@@ -1,23 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" class="h-full">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Key Guard - Secure Password Manager">
+    <meta name="description" content="Key Guard - Gestor de contraseñas seguro y cifrado">
     
-    <!-- Favicon -->
-    <link rel="icon" href="/favicon.ico" sizes="any">
+    <!-- Favicon Moderno -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
     
-    <title>Key Guard - Password Manager</title>
+    <title>Key Guard | Tu gestor de contraseñas seguro</title>
     
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#242424" media="(prefers-color-scheme: dark)">
+    <!-- Meta Tags para SEO y Social -->
+    <meta name="theme-color" content="#3b82f6">
+    <meta property="og:title" content="Key Guard">
+    <meta property="og:description" content="Gestor de contraseñas cifrado y seguro">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tudominio.com">
+    
+    <!-- Preconexiones importantes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Script de Tema -->
+    <script>
+      // Verificación inicial del tema
+      const storedTheme = localStorage.getItem('theme');
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      if (storedTheme === 'dark' || (!storedTheme && systemDark)) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.style.colorScheme = 'dark';
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.style.colorScheme = 'light';
+      }
+    </script>
   </head>
-  <body class="bg-gray-100">
-    <div id="root"></div>
+  <body class="h-full bg-gray-50 dark:bg-gray-900">
+    <div id="root" class="h-full"></div>
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Fallback para JS deshabilitado -->
+    <noscript>
+      <div class="p-4 text-center bg-red-100 text-red-800">
+        <h1 class="text-2xl font-bold">JavaScript requerido</h1>
+        <p>Esta aplicación requiere JavaScript para funcionar correctamente.</p>
+      </div>
+    </noscript>
   </body>
 </html>

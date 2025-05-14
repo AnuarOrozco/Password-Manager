@@ -1,68 +1,63 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
+@layer base {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    color-scheme: light dark;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Light mode defaults (sobreescritos en dark mode) */
+    --text-color: #213547;
+    --bg-color: #ffffff;
+    --link-color: #646cff;
+    --link-hover: #747bff;
+    --button-bg: #f9f9f9;
   }
-  a:hover {
-    color: #747bff;
+
+  /* Dark mode overrides */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --text-color: rgba(255, 255, 255, 0.87);
+      --bg-color: #242424;
+      --link-color: #646cff;
+      --link-hover: #535bf2;
+      --button-bg: #1a1a1a;
+    }
   }
+
+  /* Aplicación de variables */
+  :root {
+    color: var(--text-color);
+    background-color: var(--bg-color);
+  }
+
+  a {
+    @apply font-medium text-[var(--link-color)] hover:text-[var(--link-hover)];
+  }
+
+  body {
+    @apply m-0 flex min-h-screen min-w-[320px] place-items-center;
+  }
+
+  h1 {
+    @apply text-[3.2em] leading-[1.1];
+  }
+
   button {
-    background-color: #f9f9f9;
+    @apply rounded-lg border border-transparent bg-[var(--button-bg)] px-[1.2em] py-[0.6em] text-base font-medium font-inherit transition-[border-color] duration-250;
+    &:hover {
+      @apply border-[#646cff];
+    }
+    &:focus,
+    &:focus-visible {
+      @apply outline-[4px] outline-auto outline-[webkit-focus-ring-color];
+    }
   }
 }

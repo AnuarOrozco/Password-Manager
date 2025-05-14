@@ -6,7 +6,7 @@ function App() {
   const [refresh, setRefresh] = useState(false);
 
   const handlePasswordAdded = () => {
-    setRefresh(prev => !prev); // Triggers re-render of PasswordList
+    setRefresh(prev => !prev);
   };
 
   return (

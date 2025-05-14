@@ -4,42 +4,69 @@
 
 @layer base {
   :root {
-    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
+    --text-color: #213547;
+    --bg-color: #ffffff;
+    --link-color: #646cff;
+    --link-hover: #747bff;
+    --button-bg: #f9f9f9;
+    --border-color: #e5e7eb;
   }
 
-  /* Dark mode overrides */
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --text-color: rgba(255, 255, 255, 0.87);
-      --bg-color: #242424;
-      --link-color: #646cff;
-      --link-hover: #535bf2;
-      --button-bg: #1a1a1a;
-    }
+  .dark {
+    --text-color: rgba(255, 255, 255, 0.87);
+    --bg-color: #242424;
+    --link-color: #646cff;
+    --link-hover: #535bf2;
+    --button-bg: #1a1a1a;
+    --border-color: #374151;
   }
 
-  /* Aplicación de variables */
-  :root {
-    color: var(--text-color);
-    background-color: var(--bg-color);
-  }
-
-  a {
-    @apply font-medium text-[var(--link-color)] hover:text-[var(--link-hover)];
+  html {
+    @apply h-full scroll-smooth;
   }
 
   body {
-    @apply m-0 flex min-h-screen min-w-[320px] place-items-center;
+    @apply min-h-full flex flex-col m-0;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    transition: color 0.3s, background-color 0.3s;
+  }
+
+  h1, h2, h3 {
+    @apply font-semibold tracking-tight;
   }
 
   h1 {
-    @apply text-[3.2em] leading-[1.1];
+    @apply text-4xl md:text-5xl;
+  }
+
+  a {
+    @apply text-[var(--link-color)] hover:text-[var(--link-hover)] transition-colors;
   }
 
   button {
-    font-family: inherit; /* Changed from font-inherit */
-    @apply font-medium;
+    @apply font-medium rounded-lg;
+    font-family: inherit;
+    background-color: var(--button-bg);
+    border: 1px solid var(--border-color);
+  }
+
+  input, textarea, select {
+    @apply border border-[var(--border-color)] rounded-md px-3 py-2;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .transition-slow {
+    transition-duration: 0.5s;
   }
 }

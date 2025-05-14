@@ -1,30 +1,22 @@
-import { useState } from 'react';
-import AddPassword from './components/AddPassword';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';  // Ruta actualizada
 import PasswordList from './components/PasswordList';
+import AddPassword from './components/AddPassword';
 
-function App() {
-  const [refresh, setRefresh] = useState(false);
-
-  const handlePasswordAdded = () => {
-    setRefresh(prev => !prev);
-  };
-
+export default function App() {
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="container mx-auto px-4">
-        <header className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">
-            🔐 Password Manager
-          </h1>
-        </header>
-        
-        <main>
-          <AddPassword onSuccess={handlePasswordAdded} />
-          <PasswordList refresh={refresh} />
-        </main>
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/passwords" element={
+          <div className="min-h-screen bg-gray-100 py-8">
+            <div className="container mx-auto px-4">
+              <AddPassword />
+              <PasswordList />
+            </div>
+          </div>
+        } />
+      </Routes>
+    </Router>
   );
 }
-
-export default App;

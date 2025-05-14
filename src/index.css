@@ -4,69 +4,111 @@
 
 @layer base {
   :root {
-    --text-color: #213547;
-    --bg-color: #ffffff;
-    --link-color: #646cff;
-    --link-hover: #747bff;
-    --button-bg: #f9f9f9;
-    --border-color: #e5e7eb;
+    /* Colores base para modo claro */
+    --color-text: #111827;
+    --color-bg: #ffffff;
+    --color-primary: #2563eb;
+    --color-secondary: #7c3aed;
+    --color-accent: #059669;
+    --color-border: #e5e7eb;
   }
 
   .dark {
-    --text-color: rgba(255, 255, 255, 0.87);
-    --bg-color: #242424;
-    --link-color: #646cff;
-    --link-hover: #535bf2;
-    --button-bg: #1a1a1a;
-    --border-color: #374151;
+    /* Colores para modo oscuro */
+    --color-text: #f3f4f6;
+    --color-bg: #111827;
+    --color-primary: #3b82f6;
+    --color-secondary: #8b5cf6;
+    --color-accent: #10b981;
+    --color-border: #374151;
   }
 
+  /* Estilos base */
   html {
     @apply h-full scroll-smooth;
+    color-scheme: light dark;
   }
 
   body {
-    @apply min-h-full flex flex-col m-0;
-    color: var(--text-color);
-    background-color: var(--bg-color);
-    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    @apply min-h-screen flex flex-col bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     line-height: 1.5;
-    font-weight: 400;
-    transition: color 0.3s, background-color 0.3s;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  h1, h2, h3 {
-    @apply font-semibold tracking-tight;
+  /* Tipografía */
+  h1, h2, h3, h4 {
+    @apply font-bold tracking-tight;
   }
 
   h1 {
-    @apply text-4xl md:text-5xl;
+    @apply text-3xl sm:text-4xl md:text-5xl;
   }
 
+  h2 {
+    @apply text-2xl sm:text-3xl;
+  }
+
+  /* Enlaces */
   a {
-    @apply text-[var(--link-color)] hover:text-[var(--link-hover)] transition-colors;
+    @apply text-[var(--color-primary)] hover:text-[var(--color-secondary)] transition-colors;
   }
 
-  button {
-    @apply font-medium rounded-lg;
-    font-family: inherit;
-    background-color: var(--button-bg);
-    border: 1px solid var(--border-color);
+  /* Botones */
+  button, .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all;
+    background-color: var(--color-primary);
+    color: white;
+    &:hover {
+      background-color: var(--color-secondary);
+      transform: translateY(-1px);
+    }
+    &:active {
+      transform: translateY(0);
+    }
   }
 
+  /* Formularios */
   input, textarea, select {
-    @apply border border-[var(--border-color)] rounded-md px-3 py-2;
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    @apply px-3 py-2 border border-[var(--color-border)] rounded-md bg-white/80 dark:bg-gray-800/90;
+    &:focus {
+      @apply ring-2 ring-[var(--color-primary)] border-transparent outline-none;
+    }
+  }
+
+  /* Utilidades personalizadas */
+  .container {
+    @apply px-4 sm:px-6 lg:px-8 mx-auto w-full max-w-7xl;
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  /* Transiciones */
+  .transition-slow {
+    transition-duration: 0.4s;
   }
 
-  .transition-slow {
-    transition-duration: 0.5s;
+  .transition-fast {
+    transition-duration: 0.15s;
+  }
+
+  /* Efectos */
+  .shadow-glass {
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Para modo oscuro/claro */
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+
+  .text-primary {
+    color: var(--color-primary);
   }
 }

@@ -7,20 +7,8 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Ruta principal */}
         <Route path="/" element={<Home />} />
-        
-        {/* Rutas protegidas de contraseñas */}
-        <Route path="/passwords" element={<PasswordLayout />}>
-          <Route index element={
-            <>
-              <AddPassword />
-              <PasswordList />
-            </>
-          } />
-        </Route>
-        
-        {/* Ruta 404 */}
+        <Route path="/passwords" element={<PasswordLayout />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

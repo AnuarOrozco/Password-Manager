@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { encrypt } from '../utils/encryption';
-import { getDbConnection, closeDbConnection } from '../db/database';
+import { useDatabase } from '../hooks/useDatabase';
 import { EyeIcon, EyeSlashIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
 
 export default function AddPassword({ onPasswordAdded }) {
+  const { executeQuery } = useDatabase();
   const [formData, setFormData] = useState({
     service: '',
     username: '',
@@ -11,11 +13,22 @@ export default function AddPassword({ onPasswordAdded }) {
     showPassword: false
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
+
+  const checkPasswordStrength = (password) => {
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+    setPasswordStrength(strength);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'password') {
+      checkPasswordStrength(value);
+    }
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -26,44 +39,38 @@ export default function AddPassword({ onPasswordAdded }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError(null);
-    setSuccess(false);
 
-    let db;
     try {
       if (!formData.service || !formData.username || !formData.password) {
         throw new Error('Todos los campos son requeridos');
       }
 
-      db = await getDbConnection();
-      await db.run(
-        'INSERT INTO passwords (service, username, password) VALUES (?, ?, ?)',
-        [formData.service.trim(), formData.username.trim(), encrypt(formData.password)]
-      );
-      
-      // Reset form and show success
+      await executeQuery(async (db) => {
+        await db.run(
+          'INSERT INTO passwords (service, username, password) VALUES (?, ?, ?)',
+          [formData.service.trim(), formData.username.trim(), encrypt(formData.password)]
+        );
+      });
+
+      // Reset form
       setFormData({
         service: '',
         username: '',
         password: '',
         showPassword: false
       });
-      setSuccess(true);
+      setPasswordStrength(0);
       
-      // Notify parent component
-      if (onPasswordAdded) {
-        onPasswordAdded();
-      }
+      // Show success
+      toast.success('Contraseña guardada exitosamente');
+      
+      // Notify parent
+      if (onPasswordAdded) onPasswordAdded();
 
-      // Hide success message after 3 seconds
-      setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       console.error('Error saving password:', err);
-      setError(err.message || 'Error al guardar la contraseña. Por favor intenta nuevamente.');
+      toast.error(err.message || 'Error al guardar la contraseña');
     } finally {
-      if (db) {
-        await closeDbConnection(db);
-      }
       setIsSubmitting(false);
     }
   };
@@ -73,19 +80,6 @@ export default function AddPassword({ onPasswordAdded }) {
       <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">
         ➕ Añadir Nueva Contraseña
       </h2>
-      
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 rounded">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="mb-4 p-3 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-100 rounded flex items-center">
-          <CheckCircleIcon className="h-5 w-5 mr-2" />
-          Contraseña guardada exitosamente!
-        </div>
-      )}
 
       <div className="mb-4">
         <label className="block text-gray-700 dark:text-gray-300 mb-2">Servicio*</label>
@@ -115,7 +109,7 @@ export default function AddPassword({ onPasswordAdded }) {
         />
       </div>
 
-      <div className="mb-6">
+      <div className="mb-4">
         <label className="block text-gray-700 dark:text-gray-300 mb-2">Contraseña*</label>
         <div className="relative">
           <input
@@ -132,7 +126,7 @@ export default function AddPassword({ onPasswordAdded }) {
             type="button"
             onClick={togglePasswordVisibility}
             className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-400"
-            aria-label={formData.showPassword ? 'Hide password' : 'Show password'}
+            aria-label={formData.showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
           >
             {formData.showPassword ? (
               <EyeSlashIcon className="h-5 w-5" />
@@ -141,6 +135,30 @@ export default function AddPassword({ onPasswordAdded }) {
             )}
           </button>
         </div>
+        
+        {/* Visualizador de fortaleza de contraseña */}
+        {formData.password && (
+          <div className="mt-2">
+            <div className="flex gap-1 h-1.5">
+              {[1, 2, 3, 4].map((level) => (
+                <div 
+                  key={level}
+                  className={`flex-1 rounded-sm ${
+                    passwordStrength >= level 
+                      ? level > 2 ? 'bg-green-500' : level > 1 ? 'bg-yellow-500' : 'bg-red-500'
+                      : 'bg-gray-200 dark:bg-gray-600'
+                  }`}
+                />
+              ))}
+            </div>
+            <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">
+              {passwordStrength === 0 ? 'Muy débil' :
+               passwordStrength === 1 ? 'Débil' :
+               passwordStrength === 2 ? 'Moderada' :
+               passwordStrength === 3 ? 'Fuerte' : 'Muy fuerte'}
+            </p>
+          </div>
+        )}
       </div>
 
       <button
@@ -152,7 +170,12 @@ export default function AddPassword({ onPasswordAdded }) {
       >
         {isSubmitting ? (
           <>
-            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg 
+              className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" 
+              xmlns="http://www.w3.org/2000/svg" 
+              fill="none" 
+              viewBox="0 0 24 24"
+            >
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
